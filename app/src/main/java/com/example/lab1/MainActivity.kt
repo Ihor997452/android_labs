@@ -2,42 +2,23 @@ package com.example.lab1
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.lab1.databinding.ActivityMainBinding
-import java.text.NumberFormat
+import androidx.recyclerview.widget.RecyclerView
+import com.example.lab1.adapter.ItemAdapter
+import com.example.lab1.data.Datasource
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        // Initialize data.
+        val myDataset = Datasource().loadAffirmations()
 
-        binding.calculateButton.setOnClickListener { calculateTip() }
+        val recyclerView = findViewById<RecyclerView>(R.id.recycler_view)
+        recyclerView.adapter = ItemAdapter(this, myDataset)
+
+        // Use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true)
     }
-
-    private fun calculateTip() {
-        val stringInTextField = binding.costOfService.text.toString()
-        val cost = stringInTextField.toDoubleOrNull()
-        if (cost == null) {
-            binding.tipResult.text = ""
-            return
-        }
-
-        val tipPercentage = when (binding.tipOptions.checkedRadioButtonId) {
-            R.id.option_twenty_percent -> 0.20
-            R.id.option_eighteen_percent -> 0.18
-            else -> 0.15
-        }
-
-        var tip = tipPercentage * cost
-        if (binding.roundUpSwitch.isChecked) {
-            tip = kotlin.math.ceil(tip)
-        }
-
-        val formattedTip = NumberFormat.getCurrencyInstance().format(tip)
-        binding.tipResult.text = getString(R.string.tip_amount, formattedTip)
-    }
-
 }
